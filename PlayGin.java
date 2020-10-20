@@ -173,7 +173,7 @@ public class PlayGin {
             if (handVisualization) System.out.println(opponent.getChamp());
         }
         System.out.println();
-        
+
         turn = !turn;
     }
 
@@ -185,12 +185,27 @@ public class PlayGin {
     public static void printSettingsAndInstructions() {
         // HandVisualization
         System.out.println();
+        System.out.println("Instructions:\nThe objective of this game is to collect three sets of cards (two sets " +
+                "of three cards and one set of four cards) before your opponent does.\nA set of cards can be formed " +
+                "from a group of cards (three or four cards with the same rank) or a sequence of cards (three or " +
+                "four cards with incrementing ranks and the same suit - note that sequences cannot overlap, so a " +
+                "King cannot combine with an Ace to form a sequence).\nYou will start with 11 cards and initially " +
+                "chooses a card to dump, starting the down pile. Every turn, the player whose turn it is will choose " +
+                "to pick up the card from the down pile or take an unknown card from the deck, and then must dump a " +
+                "card to the down pile, ending their turn with 10 cards in their hand. The first player to obtain " +
+                "two three-sets and one four-set wins the game.\n\nNote: when choosing a card to dump at the end of " +
+                "your turn, type its rank (number or capital letter) followed by the first letter of its suit in " +
+                "lowercase (refer to the 3 of diamonds as \"3d\" and the King of hearts as \"Kh\").\n\n" +
+                "Ready to play? Hit enter to begin.");
+        String r = in.nextLine();
+
+        // HandVisualization
         System.out.println("Would you like to play with HandVisualization? This will help you view your hand in an " +
                 "assistive layout (recommended). Type \"y\" if so, and any other key otherwise:");
         if (in.nextLine().equals("y")) handVisualization = true;
+        System.out.println();
 
         // OpponentMemory
-        System.out.println();
         System.out.println("Would you like to play with OpponentMemory? This will allow your opponent to remember " +
                 "which cards you pick up and put down and play accordingly. This will increase the difficulty of the " +
                 "game. Type \"y\" if so, and any other key otherwise:");
@@ -204,13 +219,6 @@ public class PlayGin {
         if (in.nextLine().equals("y")) seeOpponent = true;
         System.out.println();
 
-        // Instructions
-        System.out.println("Instructions: when typing in a card to dump, type its rank (number or capital letter) " +
-                "followed by the first letter of its suit in lowercase (refer to the 3 of diamonds as \"3d\" and the " +
-                "King of hearts as \"Kh\")");
-        System.out.println();
-        System.out.println("Ready? Click enter to play.");
-        String r = in.nextLine();
         System.out.println("Good luck!");
         System.out.println();
     }

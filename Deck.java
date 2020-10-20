@@ -40,4 +40,18 @@ public class Deck {
         return str.toString();
     }
 
+    // shuffle and print deck of cards and random (y/n) answers to simulate user input
+    // for stress testing purposes
+    public String testString() {
+        Collections.shuffle(Arrays.asList(deck));
+        StringBuilder str = new StringBuilder();
+        for (Card c : deck) {
+            str.append(c).append("\n");
+        }
+        double r = Math.random();
+        if (r >= 0.5) str.append("y\n").append("n\n\n");
+        else str.append("n\n").append("y\n\n");
+        return str.toString();
+    }
+
 }
