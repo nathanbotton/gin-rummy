@@ -1,19 +1,16 @@
 # gin-rummy
-Play gin against a strategic opponent.
+Play gin against a strategic opponent.          
 Author: Nathan Botton
-
+-----------------------------------------------
 
 How to play gin:
-
 The objective of the game is to collect three sets of cards (two sets of three cards and one set of four cards) before your opponent does.
 A set of cards can be formed from a group of cards (three or four cards with the same rank) or a sequence of cards (three or four cards with incrementing ranks and the same suit - note that sequences cannot overlap, so a King cannot combine with an Ace to form a sequence).
 The first player will start with 11 cards (and the opponent with 10) and initially chooses a card to dump, starting the down pile. Every turn, the player whose turn it is will choose to pick up the card from the down pile or take an unknown card from the deck, and then must dump a card to the down pile, ending their turn with 10 cards in their hand. 
 The first player to obtain two three-sets and one four-set wins the game.
+------------------------------------------------ 
  
- 
-The code:
-
-
+The Code:
 The game of gin is played with Cards: 
 
     Each card has a rank, a suit, and a numerical value associated with its rank (1 for A, 11 for J, 12 for Q, 13 for K).
