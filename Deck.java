@@ -12,7 +12,7 @@ public class Deck {
     private int current = 0;
     private static final int NCARDS = 52;
 
-    // create and shuffle deck
+    // Deck constructor: create and shuffle deck
     public Deck() {
         deck = new Card[NCARDS];
         String[] ranks = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
@@ -23,7 +23,6 @@ public class Deck {
         }
 
         Collections.shuffle(Arrays.asList(deck));
-
     }
 
     // deal a card from the deck
@@ -39,28 +38,6 @@ public class Deck {
             str.append(c).append(" ");
         }
         return str.toString();
-    }
-
-    public String testString() {
-        Collections.shuffle(Arrays.asList(deck));
-        StringBuilder str = new StringBuilder();
-        for (Card c : deck) {
-            str.append(c).append("\n");
-        }
-        double r = Math.random();
-        if (r >= 0.5) str.append("y\n").append("n\n\n");
-        else str.append("n\n").append("y\n\n");
-        return str.toString();
-    }
-
-    public static void main(String[] args) {
-        StringBuilder str = new StringBuilder();
-        Deck d = new Deck();
-        str.append("n\n\n");
-        for (int i = 0; i < 200; i++) {
-            str.append(d.testString());
-        }
-        System.out.println(str);
     }
 
 }

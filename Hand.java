@@ -12,7 +12,6 @@ public class Hand {
     private static final int HAND_SIZE = 11;    // size of hand (capacity of 11), blank spot represented by 00
     private SetState champ;                     // best possible state
 
-
     // create hand (player goes first)
     public Hand(Deck deck, boolean player) {
         // insert 10 shuffled cards
@@ -25,33 +24,35 @@ public class Hand {
         setChamp();                                         // set the current champion state
     }
 
-
-    /* --------------------------------------------------------------------------------------------------------------*/
-    /* ---------------------------------------SETSTATE NESTED CLASS--------------------------------------------------*/
-    /* --------------------------------------------------------------------------------------------------------------*/
+    /* ---------------------------------------------------------------------------------------------------------------*/
+    /* ----------------------------------------SETSTATE NESTED CLASS--------------------------------------------------*/
+    /* ---------------------------------------------------------------------------------------------------------------*/
 
     // a SetState is a representation of the possible arrangements of sets a hand can take, and its cards' properties
     public static class SetState {
-        private int num2 = 0;           // potential sets
-        private int num3 = 0;           // sets of 3
-        private int num4 = 0;           // sets of 4
-        private Card[][] set3 = new Card[3][3];
-        private Card[][] set4 = new Card[1][4];
-        private Card[][] p2 = new Card[11][2];
+        private int num2 = 0;           // number of pairs in state
+        private int num3 = 0;           // number of 3-sets in state
+        private int num4 = 0;           // number of 3-sets in state
+        private Card[][] set3 = new Card[3][3];     // array of 3-sets (only 3 possible)
+        private Card[][] set4 = new Card[1][4];     // array of 4-sets (only 1 allowed)
+        private Card[][] set2 = new Card[11][2];      // array of pairs (only 11 possible)
 
+        // construct empty state
         public SetState() {
         }
 
+        // construct state with pre-set set and pair amounts
         public SetState(int num2, int num3, int num4) {
             this.num2 = num2;
             this.num3 = num3;
             this.num4 = num4;
         }
 
+        // return first available slot for set of 2, 3, or 4 elements in the state's collection
         public int firstEmpty(int n) {
             if (n == 2) {
-                for (int i = 0; i < p2.length; i++) {
-                    if (p2[i][0] == null) return i;
+                for (int i = 0; i < set2.length; i++) {
+                    if (set2[i][0] == null) return i;
                 }
             } else if (n == 3) {
                 for (int i = 0; i < set3.length; i++) {
@@ -66,14 +67,14 @@ public class Hand {
             return -1;
         }
 
-        // make a card's status part of a set
+        // create a set of cards from a stack and update the card's statuses
         public void addSet(Stack<Card> s, int len) {
             int spot = firstEmpty(len);
 
             if (len == 2) {
                 while (!s.isEmpty()) {
                     Card c = s.pop();
-                    p2[spot][len - 1] = c;
+                    set2[spot][len - 1] = c;
                     len--;
                     c.putInPair(true);
                 }
@@ -84,44 +85,40 @@ public class Hand {
                     set3[spot][len - 1] = c;
                     len--;
                     c.putInSet(true);
-                    if (c.getInPair()) removePair(c);
+                    if (c.getInPair()) removePair(c);           // remove card's pair if card is being added to a set
                 }
                 num3++;
-                // System.out.println("--3add");
             } else if (len == 4) {
                 while (!s.isEmpty()) {
                     Card c = s.pop();
                     set4[spot][len - 1] = c;
                     len--;
                     c.putInSet(true);
-                    if (c.getInPair()) removePair(c);
+                    if (c.getInPair()) removePair(c);           // remove card's pair if card is being added to a set
                 }
                 num4++;
-
             }
         }
 
-        // remove pair if one of them becomes part of a set
+        // remove a pair if one of the cards in the pair becomes part of a set
         public void removePair(Card c) {
             boolean contained;
-            for (int i = 0; i < p2.length; i++) {
+            for (int i = 0; i < set2.length; i++) {
                 contained = false;
-                for (int j = 0; j < p2[0].length; j++) {
-                    if (p2[i][j] != null && p2[i][j].equals(c)) {
-                        for (Card card : p2[i]) card.putInPair(false);
+                for (int j = 0; j < set2[0].length; j++) {                      // check if card is in pair
+                    if (set2[i][j] != null && set2[i][j].equals(c)) {
                         contained = true;
+                        break;
                     }
                 }
                 if (contained) {
-                    p2[i][0] = null;
-                    p2[i][1] = null;
+                    for (Card card : set2[i]) card.putInPair(false);            // set card statuses to out of pair
+                    set2[i][0] = null;
+                    set2[i][1] = null;
                     num2--;
                 }
-
-
             }
         }
-
 
         // return the better of the two states
         public SetState champion(SetState that) {
@@ -165,7 +162,7 @@ public class Hand {
             str.append("\n\t");
 
             str.append(num2).append(" pair(s): ");
-            for (Card[] cards : p2) {
+            for (Card[] cards : set2) {
                 if (cards[0] != null) {
                     str.append("(");
                     for (int i = 0; i < cards.length; i++) {
@@ -181,7 +178,6 @@ public class Hand {
         }
     }
 
-
     /* ---------------------------------------------------------------------------------------------------------------*/
     /* ---------------------------------------------HAND OPERATIONS---------------------------------------------------*/
     /* ---------------------------------------------------------------------------------------------------------------*/
@@ -191,23 +187,15 @@ public class Hand {
         champ = checkOrder().champion(checkDup());      // return the better of the two states
     }
 
-    // add card to hand and update champion SetState
+    // add a card to the hand and update champion state
     public void add(Card c) {
         hand[0] = c;
         setChamp();
     }
 
-    // dump a card from hand, update champion SetState
-    public Card dump(int i) {
-        Card c = hand[i];
-        hand[i] = hand[HAND_SIZE - 1];
-        hand[HAND_SIZE - 1] = new Card("0", "0");
-        setChamp();
-        return c;
-    }
-
-    // judge a card (for opponent) -- add it, see if it attains in better SetState, and keep it if it does
-    public boolean judge(Card c) {
+    // opponent version of add()
+    // judge a card: add it, see if it attains in better state, and keep it if it does
+    public boolean opponentAdd(Card c) {
         SetState old = new SetState(champ.num2, champ.num3, champ.num4);    // current SetState, for comparison
         add(c);
         if (champ.champion(old) == champ) return true;          // if SetState is better, keep the card and return true
@@ -222,32 +210,43 @@ public class Hand {
         }
     }
 
-    // strategically dump a card in the opponent's hand -- primarily if it's not in a set and doesn't have potential
-    // and otherwise if it's not in a set
-    public Card oppDump() {
-        int spot = -1;
-        Card c;
-        for (int i = 0; i < HAND_SIZE; i++) {               // find card not in set and without potential
-            if (hand[i].getValue() == 0) continue;
-            if (!hand[i].getInSet()) {
-                if (!hand[i].getInPair()) {
-                    spot = i;
-                    break;
-                }
+    // dump a card from hand, update champion state
+    public Card dump(int i) {
+        Card c = hand[i];
+        hand[i] = hand[HAND_SIZE - 1];
+        hand[HAND_SIZE - 1] = new Card("0", "0");
+        setChamp();
+        return c;
+    }
+
+    // strategically dump a card in the opponent's hand
+    // primarily dump if card is not in a set and doesn't have potential, otherwise if it's not in a set
+    // possibly take into account what the opponent knows the player has previously picked up
+    public Card opponentDump(Card[] inPlayerHand, boolean memory) {
+        for (int i = 0; i < HAND_SIZE; i++) {               // find card not in a set and not in a pair
+            if (hand[i].getValue() == 0) continue;          // ignore filler card
+            if (!hand[i].getInSet() && !hand[i].getInPair()) {
+                if (memory && hand[i].canPairWithAny(inPlayerHand)) continue;
+                return dump(i);                             // dump card if found
             }
         }
 
-        if (spot != -1) c = dump(spot);                     // dump the card if found
-        else {                                              // otherwise, dump the first card not in a set
-            for (int i = 0; i < HAND_SIZE; i++) {
-                if (!hand[i].getInSet()) {
-                    spot = i;
-                    break;
-                }
+        // otherwise, dump the first card not in a set, possibly avoiding cards that would help the player
+        for (int i = 0; i < HAND_SIZE; i++) {
+            if (!hand[i].getInSet()) {
+                if (memory && hand[i].canPairWithAny(inPlayerHand)) continue;
+                return dump(i);
             }
-            c = dump(spot);
         }
-        return c;
+
+        // if that's not possible, just dump the first card not in a set
+        for (int i = 0; i < HAND_SIZE; i++) {
+            if (!hand[i].getInSet()) {
+                return dump(i);
+            }
+        }
+
+        return null;
     }
 
     // check if the given SetState is a winning one
@@ -282,32 +281,31 @@ public class Hand {
 
     // return the state given by checking primarily for ordered sets
     public SetState checkOrder() {
-        clear();                                    // clear statuses of cards
-        SetState set = new SetState();              // initialize new state
-        findOrderedSet(set);                        // update state for ordered sets
-        findDupSet(set);                            // update state for duplicate sets
-        return set;                                 // return the SetState
+        clear();
+        SetState set = new SetState();
+        findOrderedSet(set);                        // search hand for sets of ordered cards
+        findDupSet(set);                            // then search remaining cards for sets of duplicate cards
+        return set;                                 // return state given by that search
     }
 
     // return the state given by checking primarily for duplicates sets
     public SetState checkDup() {
-        clear();                                    // clear statuses of cards
-        SetState set = new SetState();              // initialize new state
-        findDupSet(set);                            // update state for duplicate sets
-        findOrderedSet(set);                        // update state for ordered sets
-        return set;                                 // return the SetState
+        clear();
+        SetState set = new SetState();
+        findDupSet(set);                            // search hand for sets of ordered cards
+        findOrderedSet(set);                        // then search remaining cards for sets of duplicate cards
+        return set;                                 // return state given by that search
     }
 
 
-    // find sets of same values
+    // search hand for sets of cards with the same values
     public void findDupSet(SetState s) {
         Arrays.sort(hand);                                          // sort hand by value
 
         for (int i = 0; i < HAND_SIZE; i++) {
-            // orderFirst &&
-            if (hand[i].getInSet()) continue;        // ensure card isn't already in a set
+            if (hand[i].getInSet()) continue;                       // make sure card isn't already in a set
 
-            // create queue to store cards in potential set, push current card
+            // create stack to store cards in potential set, push current card
             Stack<Card> dups = new Stack<Card>();
             dups.push(hand[i]);
             int inStack = 1;
@@ -317,7 +315,7 @@ public class Hand {
             // (or 3 if there's already a 4 set)
             while (i < HAND_SIZE - 1 && hand[i + 1].getValue() == hand[i].getValue() && (inStack < 3 ||
                     (s.num4 == 0 && inStack < 4))) {
-                // ensure next card isn't already in a set
+                // make sure next card isn't already in a set
                 if (hand[i + 1].getInSet()) {
                     i++;
                     continue;
@@ -326,19 +324,18 @@ public class Hand {
                 inStack++;
                 i++;
             }
-
+            // if stack is valid set, add it
             if (inStack == 2 || inStack == 3 || inStack == 4) s.addSet(dups, inStack);
         }
     }
 
 
-    // find sets of ordered values
+    // search hand for sets of ordered values
     private void findOrderedSet(SetState s) {
         Arrays.sort(hand, new Card.bySuit());                   // sort hand by suit
 
         for (int i = 0; i < HAND_SIZE; i++) {
-            //dupFirst &&
-            if (hand[i].getInSet()) continue;      // ensure card isn't already in a set
+            if (hand[i].getInSet()) continue;      // make sure card isn't already in a set
             int value = hand[i].getValue();
             String suit = hand[i].getSuit();
 
@@ -346,14 +343,14 @@ public class Hand {
             Stack<Card> ords = new Stack<Card>();
             ords.push(hand[i]);
             int inStack = 1;
-            int j = 1;
+            int j = 1;                              // keep track of increment
 
             // while set conditions met, add next card to set
             // conditions: don't pass last card, suit is same, value is correct increment, stack doesn't exceed 4 cards
             // (or 3 if there's already a 4 set)
             while (i < HAND_SIZE - 1 && hand[i + 1].getSuit().equals(suit) && hand[i + 1].getValue() == value + j &&
                     (inStack < 3 || (s.num4 == 0 && inStack < 4))) {
-                // ensure next card isn't already in A set
+                // make next card isn't already in a set
                 if (hand[i + 1].getInSet()) {
                     i++;
                     continue;
@@ -363,11 +360,10 @@ public class Hand {
                 j++;
                 i++;
             }
+            // if stack is valid set, add it
             if (inStack == 2 || inStack == 3 || inStack == 4) s.addSet(ords, inStack);
         }
     }
-
-
 
     /* ---------------------------------------------------------------------------------------------------------------*/
     /* -----------------------------------------TOSTRING REPRESENTATION-----------------------------------------------*/
@@ -382,10 +378,7 @@ public class Hand {
                 str.append(c.picRep()).append(" ");
             }
         }
-        // str.append("\n").append(champ);
-
         return str.toString();
     }
-
 
 }

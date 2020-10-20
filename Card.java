@@ -7,18 +7,19 @@
 import java.util.Comparator;
 
 public class Card implements Comparable<Card> {
-    private int value;
-    private String rank;
-    private String suit;
-    private boolean inSet;
-    private boolean inPair;
+    private int value;              // numeric value of card's rank
+    private String rank;            // card's rank
+    private String suit;            // card's suit
+    private boolean inSet;          // denotes if card is part of a pair in the player's hand
+    private boolean inPair;         // denotes if card is part of a pair in the player's hand
 
+    // Card constructor
     public Card(String rank, String suit) {
         this.suit = suit;
         this.rank = rank;
         inSet = false;
 
-        // assign value
+        // assign value by rank
         switch (rank) {
             case "A":
                 value = 1;
@@ -38,32 +39,50 @@ public class Card implements Comparable<Card> {
         }
     }
 
+    // return value
     public int getValue() {
         return value;
     }
 
+    // return suit
     public String getSuit() {
         return suit;
     }
 
+    // return if the card is in a set in a player's hand
     public Boolean getInSet() {
         return inSet;
     }
 
+    // set inSet (put card in or take card out of set)
     public void putInSet(boolean in) {
         inSet = in;
     }
 
+    // return if the card is in a pair in a player's hand
     public Boolean getInPair() {
         return inPair;
     }
 
+    // set inSet (put card in or take card out of pair)
     public void putInPair(boolean in) {
         inPair = in;
     }
 
+    // returns if this card can pair with another card
+    public boolean canPairWith(Card that) {
+        if (that == null) return false;
+        if (this.value == that.value) return true;
+        return this.suit.equals(that.suit) && (this.value + 1 == that.value || this.value - 1 == that.value);
+    }
 
-    // compare by suit
+    // returns if this card can pair with any card in an array of cards
+    public boolean canPairWithAny(Card[] cards) {
+        for (Card c : cards) if (this.canPairWith(c)) return true;
+        return false;
+    }
+
+    // compare cards by suit (then by rank)
     public static class bySuit implements Comparator<Card> {
         public int compare(Card a, Card b) {
             if (!a.suit.equals(b.suit)) {
@@ -72,8 +91,7 @@ public class Card implements Comparable<Card> {
         }
     }
 
-
-    // comparator (by value first, then suit)
+    // compare cards by value (then by suit)
     public int compareTo(Card that) {
         if (that == null) return -1;
         if (this.value != that.value) {
@@ -81,7 +99,7 @@ public class Card implements Comparable<Card> {
         } else return this.suit.compareTo(that.suit);
     }
 
-    // suit picture representation of card
+    // picture representation of card
     public String picRep() {
         String str = rank;
         switch (suit) {
