@@ -172,7 +172,6 @@ public class Hand {
                     str.append(")  ");
                 }
             }
-            str.append("\n");
 
             return str.toString();
         }

@@ -58,9 +58,10 @@ public class PlayGin {
         if (handVisualization) System.out.println(player.getChamp());
         System.out.println();
         System.out.println("You go first!");
-
+        System.out.println();
         // prompt player to dump a card, make sure input is valid card to dump
         promptDump();
+        System.out.println();
     }
 
     // play player's turn
@@ -139,7 +140,6 @@ public class PlayGin {
                 }
             }
         }
-        System.out.println();
     }
 
     // play opponent's turn
@@ -149,6 +149,7 @@ public class PlayGin {
             System.out.println("Opponent's hand: " + opponent);
             if (handVisualization) System.out.println(opponent.getChamp());
         }
+        System.out.println();
 
         // opponent add
         if (opponent.opponentAdd(down)) {
@@ -162,16 +163,17 @@ public class PlayGin {
             }
             opponent.add(c);
         }
+        System.out.println();
 
         // opponent dump
         down = opponent.opponentDump(inPlayerHand, memory);
         System.out.println("Opponent dumped " + down.picRep() + ".");
-        System.out.println();
         if (seeOpponent) {
             System.out.println("Opponent's hand: " + opponent);
             if (handVisualization) System.out.println(opponent.getChamp());
         }
-
+        System.out.println();
+        
         turn = !turn;
     }
 
