@@ -1,28 +1,29 @@
 # gin-rummy
-Play gin against a strategic opponent.          
+Play Gin against a strategic opponent.          
 Author: Nathan Botton
 -----------------------------------------------
 
-How to play Gin:\ 
-The objective of the game is to collect three sets of cards (two sets of three cards and one set of four cards) before your opponent does.\
-A set of cards can be formed from a group of cards (three or four cards with the same rank) or a sequence of cards (three or four cards with incrementing ranks and the same suit - note that sequences cannot run past the end of the deck, so a King cannot combine with an Ace to form a sequence).\
-The first player will start with 11 cards (and the opponent with 10) and initially chooses a card to dump, starting the down pile. Every turn, the player whose turn it is will choose to pick up the card from the down pile or take an unknown card from the deck, and then must dump a card to the down pile, ending their turn with 10 cards in their hand.\ 
-The first player to obtain two three-sets and one four-set wins the game.\
-\
-\
-The Code:
-The game is played with Cards:
+<strong>How to play:</strong><br/> 
+The objective of the game is to collect three sets of cards (two sets of three cards and one set of four cards) before your opponent does.<br/>
+A set of cards can be formed from a group of cards (three or four cards with the same rank) or a sequence of cards (three or four cards with incrementing ranks and the same suit - note that sequences cannot run past the end of the deck, so a King cannot combine with an Ace to form a sequence).<br/>
+The first player will start with 11 cards (and the opponent with 10) and initially chooses a card to dump, starting the down pile. Every turn, the player whose turn it is will choose to pick up the card from the down pile or take an unknown card from the deck, and then must dump a card to the down pile, ending their turn with 10 cards in their hand.<br/> 
+The first player to obtain two three-sets and one four-set wins the game.<br/><br/><br/>
+
+<strong>The Code:</strong><br/>
+The game is played with <strong>Card</strong>s:
 
     Each Card has a rank, a suit, and a numerical value associated with its rank (1 for A, 11 for J, 12 for Q, 13 for K).
     Each Card also has the quality of being included in a set in either player's hand, or being included in a pair in either player's hand.
     Cards can be compared and ordered by value or by suit primarily.
     Each Card also has the quality of pairing with other Cards (if their values are the same or if their suits are the same and their values differ by 1).
 
-Each game is played with a Deck of Cards:
+Each game is played with a <strong>Deck</strong> of Cards:
+
     A Deck is a shuffled array of 52 unique Cards.
     A Deck can be dealt from, and the dealt Card will not be dealt again.
 
-At the heart of the game are the Hands (the cards in the hand of the player and the opponent):
+At the heart of the game are the <strong>Hand</strong>s (the cards in the hand of the player and the opponent):
+
     Each Hand starts with 10 Cards dealt from the shuffled Deck, and the player is dealt one more Card to begin.
     For the player:
         A Card can be added to the Hand.
@@ -35,14 +36,16 @@ At the heart of the game are the Hands (the cards in the hand of the player and 
     The Hand can be checked for sets of Cards in multiple ways and return the best arrangement of sets.
         Sets can be searched for primarily by groups (duplicate values) and then by sequences (ordered values with the same suit) with the remaining Cards, OR primarily by sequences and then by groups with the remaining Cards. If the Hand is in a winning state, one of these will detect it.
 
-Within the Hand is a SetState:
+Within the Hand is a <strong>SetState</strong>:
+
     A SetState is a possible arrangement of sets the Hand contains.
     As the Hand is being searched for sets, found sets are added to the SetState.
     The SetState contains sets/pairs of Cards in arrays of sets (which are represented as arrays of Cards).
     A SetState can be checked to see if it is in a winning state (contains two 3-sets and one 4-set) -- this is used to check if a Hand is a winning hand.
     SetStates can be relatively compared to show the player the best arrangement of Cards they have, and a winning SetState will always win in a comparison.
 
-The game is played through PlayGin
+The game is played through <strong>PlayGin</strong>:
+
     The game's instructions are printed, and the player can choose certain settings of the game.
     The game begins, and while there is no winner, rounds are played.
     The player is prompted to pick up a card and then dump a card during their turn, and the opponent's round is automated.
