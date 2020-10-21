@@ -139,7 +139,7 @@ public class Hand {
                 if (cards[0] != null) {
                     str.append("[");
                     for (int i = 0; i < cards.length; i++) {
-                        str.append(cards[i]);
+                        str.append(cards[i].picRep());
                         if (i != cards.length - 1) str.append(" ");
                     }
                     str.append("]  ");
@@ -152,7 +152,7 @@ public class Hand {
                 if (cards[0] != null) {
                     str.append("[");
                     for (int i = 0; i < cards.length; i++) {
-                        str.append(cards[i]);
+                        str.append(cards[i].picRep());
                         if (i != cards.length - 1) str.append(" ");
 
                     }
@@ -166,7 +166,7 @@ public class Hand {
                 if (cards[0] != null) {
                     str.append("(");
                     for (int i = 0; i < cards.length; i++) {
-                        str.append(cards[i]);
+                        str.append(cards[i].picRep());
                         if (i != cards.length - 1) str.append(" ");
                     }
                     str.append(")  ");
